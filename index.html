@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ひっかけ○×">
+<meta name="theme-color" content="#1f3a5f">
+<title>宅建ひっかけ○×</title>
+<style>
+:root{
+  --bg:#f5f6f8; --card:#fff; --ink:#1c2430; --sub:#6b7480; --line:#e2e5ea;
+  --pri:#1f3a5f; --ok:#1a8a5a; --ng:#d23c3c; --warn:#c98a00; --hl:#ffe36e;
+  --chip:#eef1f5;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#12161c; --card:#1c222b; --ink:#e7eaee; --sub:#9aa3ae; --line:#2c3440;
+    --pri:#7fb0ff; --ok:#3fcf8e; --ng:#ff6b6b; --warn:#f0b429; --hl:#6b5a00;
+    --chip:#252c37;
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+  font-size:16px;line-height:1.6}
+.wrap{max-width:640px;margin:0 auto;padding:16px 16px calc(24px + env(safe-area-inset-bottom))}
+h1{font-size:20px;margin:4px 0 2px}
+h2{font-size:16px;margin:20px 0 8px}
+.sub{color:var(--sub);font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.grow{flex:1}
+button{font:inherit;cursor:pointer;border:none;border-radius:12px;padding:12px 14px;
+  background:var(--chip);color:var(--ink)}
+button.pri{background:var(--pri);color:#fff;font-weight:600}
+@media (prefers-color-scheme: dark){button.pri{color:#0d1520}}
+button.block{display:block;width:100%;margin:8px 0;text-align:left}
+button.block small{display:block;color:inherit;opacity:.75;font-size:12px;font-weight:400}
+button:disabled{opacity:.4}
+.count{display:flex;align-items:baseline;gap:6px}
+.count b{font-size:34px;color:var(--ng);line-height:1}
+.stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.stats3 div{background:var(--chip);border-radius:10px;padding:8px 4px}
+.stats3 b{display:block;font-size:20px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:7px 12px;border-radius:999px;font-size:14px;background:var(--chip);border:1px solid transparent}
+.chip.on{background:var(--pri);color:#fff}
+@media (prefers-color-scheme: dark){.chip.on{color:#0d1520}}
+.tag{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--sub);margin-right:4px}
+.tag.t{background:transparent;border:1px solid var(--warn);color:var(--warn)}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin:6px 0 12px}
+.bar i{display:block;height:100%;background:var(--pri)}
+.qtext{font-size:17px;line-height:1.8;margin:10px 0 4px}
+mark{background:var(--hl);color:inherit;padding:0 2px;border-radius:3px}
+.ans{display:grid;grid-template-columns:1fr 1fr;gap:12px;position:fixed;left:0;right:0;bottom:0;
+  max-width:640px;margin:0 auto;padding:12px 16px calc(16px + env(safe-area-inset-bottom));background:linear-gradient(transparent,var(--bg) 20%)}
+.ans button{font-size:44px;font-weight:700;padding:22px 0;background:var(--card);border:2px solid var(--line);line-height:1}
+.ans button.pri{background:var(--pri);border-color:var(--pri);padding:18px 0}
+.ans button:active{transform:scale(.97)}
+.quiz{padding-bottom:140px}
+.ans .o{color:var(--ok)} .ans .x{color:var(--ng)}
+.verdict{font-size:20px;font-weight:700}
+.verdict.ok{color:var(--ok)} .verdict.ng{color:var(--ng)}
+.exp{border-left:4px solid var(--pri);padding:4px 0 4px 12px;margin:10px 0}
+.trap{font-size:14px;color:var(--warn);font-weight:600}
+.toggle{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;background:var(--chip);margin:8px 0;user-select:none}
+.toggle input{width:20px;height:20px}
+.mini{display:grid;grid-template-columns:7.5em 1fr 4.5em;gap:8px;align-items:center;font-size:14px;margin:6px 0}
+.mini .bar{margin:0}
+.mini .bar i.low{background:var(--ng)} .mini .bar i.mid{background:var(--warn)} .mini .bar i.hi{background:var(--ok)}
+.list .it{border-top:1px solid var(--line);padding:10px 0;font-size:14px}
+.list .it:first-child{border-top:none}
+.mk{font-weight:700;margin-right:6px}
+.mk.ok{color:var(--ok)} .mk.ng{color:var(--ng)}
+.hide{display:none}
+.top{display:flex;align-items:center;gap:8px}
+.top button{padding:8px 12px;font-size:14px}
+a{color:var(--pri)}
+.foot{color:var(--sub);font-size:12px;margin-top:24px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script src="questions.js"></script>
+<script>
+(() => {
+const Q = window.QUESTIONS;
+const EXAM = new Date(2026, 9, 18); // 令和8年度 宅建試験 10/18(日)
+const CATS = {gyo:"宅建業法", ken:"権利関係", hou:"法令上の制限", zei:"税・その他"};
+const TYPES = {num:"数字すり替え", exc:"原則⇔例外", who:"主体・相手方", abs:"断定・限定", time:"期間・起算点", eff:"効果すり替え", req:"要件の追加・欠落", kai:"法改正"};
+const KEY = "takken-hikkake-v1";
+const app = document.getElementById("app");
+
+// ---- 保存データ ----
+// rec[id] = {n:回答数, c:正解数, last:直近正誤(1/0), u:迷った(1/0), streak:連続正解}
+let store = {rec:{}, cfg:{cats:Object.keys(CATS), types:[], size:20}};
+try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.rec) store = Object.assign(store, s); } catch(e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e) {} };
+const rec = id => store.rec[id];
+// 要復習＝直近不正解 or 迷った（2回連続で自信を持って正解すると外れる）
+const isWeak = q => { const r = rec(q.id); return !!r && (r.last === 0 || r.u === 1); };
+
+const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const pct = (c, n) => n ? Math.round(c / n * 100) : null;
+
+// ---- セッション ----
+let S = null; // {list, i, results:[{id, ok, u}], answered}
+
+function start(list, label) {
+  if (!list.length) { alert("該当する問題がありません"); return; }
+  S = {list, i:0, results:[], answered:false, label};
+  renderQ();
+}
+
+// 出題順：未回答→要復習→正答率の低い順をやや優先しつつランダム
+function pick(pool, n) {
+  const score = q => { const r = rec(q.id); if (!r) return 2 + Math.random(); return (isWeak(q) ? 1.5 : 0) + (1 - r.c / r.n) + Math.random(); };
+  return pool.map(q => [score(q), q]).sort((a, b) => b[0] - a[0]).slice(0, n).map(x => x[1]);
+}
+
+// ---- ホーム ----
+function renderHome() {
+  S = null;
+  app.classList.remove("quiz");
+  const days = Math.ceil((EXAM - new Date(new Date().toDateString())) / 864e5);
+  const ans = Q.filter(q => rec(q.id));
+  const n = ans.reduce((s, q) => s + rec(q.id).n, 0), c = ans.reduce((s, q) => s + rec(q.id).c, 0);
+  const weak = Q.filter(isWeak), unseen = Q.filter(q => !rec(q.id));
+  const cfg = store.cfg;
+  app.innerHTML = `
+  <h1>宅建ひっかけ○×</h1>
+  <div class="sub">本試験の「ひっかけ肢」だけを集めた一問一答（全${Q.length}問）</div>
+  <div class="card">
+    <div class="row"><div class="count grow">${days > 0 ? `本試験（10/18）まで <b>${days}</b> 日` : days === 0 ? "<b>本日</b> 本試験" : "試験お疲れさまでした"}</div></div>
+    <div class="stats3" style="margin-top:12px">
+      <div><b>${ans.length}/${Q.length}</b><span class="sub">解答済</span></div>
+      <div><b>${pct(c, n) ?? "-"}${n ? "%" : ""}</b><span class="sub">正答率</span></div>
+      <div><b style="color:var(--ng)">${weak.length}</b><span class="sub">要復習</span></div>
+    </div>
+  </div>
+  <button class="pri block" id="bQuick">▶ おまかせ20問<small>未回答・苦手を優先してランダム出題</small></button>
+  <button class="block" id="bWeak" ${weak.length ? "" : "disabled"}>🔁 要復習だけ解く（${weak.length}問）<small>間違えた問題＋「迷った」問題</small></button>
+  <button class="block" id="bUnseen" ${unseen.length ? "" : "disabled"}>🆕 未回答から（${unseen.length}問）</button>
+
+  <h2>カスタム出題</h2>
+  <div class="card">
+    <div class="sub">分野</div>
+    <div class="chips" id="cats" style="margin:6px 0 12px">${Object.entries(CATS).map(([k, v]) =>
+      `<button class="chip ${cfg.cats.includes(k) ? "on" : ""}" data-k="${k}">${v}</button>`).join("")}</div>
+    <div class="sub">ひっかけパターン（未選択＝すべて）</div>
+    <div class="chips" id="types" style="margin:6px 0 12px">${Object.entries(TYPES).map(([k, v]) =>
+      `<button class="chip ${cfg.types.includes(k) ? "on" : ""}" data-k="${k}">${v}</button>`).join("")}</div>
+    <div class="sub">問題数</div>
+    <div class="chips" id="size" style="margin:6px 0 12px">${[10, 20, 30, 0].map(s =>
+      `<button class="chip ${cfg.size === s ? "on" : ""}" data-s="${s}">${s || "全部"}</button>`).join("")}</div>
+    <button class="pri block" id="bCustom" style="text-align:center">この条件でスタート（<span id="poolN"></span>問から）</button>
+  </div>
+
+  <h2>弱点分析</h2>
+  <div class="card">${analysis()}</div>
+  <div class="foot">
+    法令基準日 令和8年4月1日を想定して作成。学習記録はこの端末のブラウザに保存されます。<br>
+    <a href="#" id="bReset">学習記録をリセット</a>
+  </div>`;
+
+  const pool = () => Q.filter(q => cfg.cats.includes(q.c) && (!cfg.types.length || cfg.types.includes(q.t)));
+  const upd = () => { document.getElementById("poolN").textContent = pool().length; };
+  upd();
+  document.getElementById("cats").onclick = e => { const k = e.target.dataset.k; if (!k) return;
+    cfg.cats = cfg.cats.includes(k) ? cfg.cats.filter(x => x !== k) : [...cfg.cats, k]; e.target.classList.toggle("on"); save(); upd(); };
+  document.getElementById("types").onclick = e => { const k = e.target.dataset.k; if (!k) return;
+    cfg.types = cfg.types.includes(k) ? cfg.types.filter(x => x !== k) : [...cfg.types, k]; e.target.classList.toggle("on"); save(); upd(); };
+  document.getElementById("size").onclick = e => { const s = e.target.dataset.s; if (s == null) return;
+    cfg.size = +s; [...e.currentTarget.children].forEach(b => b.classList.toggle("on", b === e.target)); save(); };
+  document.getElementById("bCustom").onclick = () => { const p = pool(); start(cfg.size ? pick(p, cfg.size) : shuffle(p), "カスタム"); };
+  document.getElementById("bQuick").onclick = () => start(pick(Q, 20), "おまかせ");
+  document.getElementById("bWeak").onclick = () => start(shuffle(weak), "要復習");
+  document.getElementById("bUnseen").onclick = () => start(pick(unseen, 20), "未回答");
+  document.getElementById("bReset").onclick = e => { e.preventDefault();
+    if (confirm("学習記録をすべて消去します。よろしいですか？")) { store.rec = {}; save(); renderHome(); } };
+  app.querySelectorAll("[data-weak-type]").forEach(b => b.onclick = () => {
+    const t = b.dataset.weakType; start(pick(Q.filter(q => q.t === t), 15), TYPES[t]); });
+}
+
+function analysis() {
+  const agg = key => { const m = {};
+    Q.forEach(q => { const r = rec(q.id); const k = q[key]; m[k] = m[k] || {n:0, c:0, w:0};
+      if (r) { m[k].n += r.n; m[k].c += r.c; if (isWeak(q)) m[k].w++; } }); return m; };
+  const line = (label, v, extra = "") => { const p = pct(v.c, v.n);
+    const cls = p == null ? "" : p < 60 ? "low" : p < 80 ? "mid" : "hi";
+    return `<div class="mini"><span>${label}</span><div class="bar"><i class="${cls}" style="width:${p ?? 0}%"></i></div><span>${p == null ? "-" : p + "%"}${extra}</span></div>`; };
+  const c = agg("c"), t = agg("t");
+  const tEntries = Object.entries(TYPES).filter(([k]) => t[k]);
+  const ranked = tEntries.filter(([k]) => t[k].n >= 3).sort((a, b) => t[a[0]].c / t[a[0]].n - t[b[0]].c / t[b[0]].n);
+  return `<div class="sub">分野別</div>${Object.entries(CATS).map(([k, v]) => line(v, c[k])).join("")}
+    <div class="sub" style="margin-top:12px">ひっかけパターン別（引っかかりやすい順）</div>
+    ${(ranked.length ? ranked : tEntries).map(([k, v]) => line(v, t[k])).join("")}
+    ${ranked.length ? `<button class="block" data-weak-type="${ranked[0][0]}" style="margin-top:10px">🎯 一番弱い「${TYPES[ranked[0][0]]}」を15問集中特訓</button>` : `<div class="sub">3問以上解くとパターン別の弱点が分かります</div>`}`;
+}
+
+// ---- 出題 ----
+function renderQ() {
+  const q = S.list[S.i], r = rec(q.id);
+  S.answered = false;
+  app.classList.add("quiz");
+  app.innerHTML = `
+  <div class="top"><button id="bQuit">✕ 中断</button><div class="grow sub" style="text-align:right">${S.label}　${S.i + 1} / ${S.list.length}</div></div>
+  <div class="bar"><i style="width:${S.i / S.list.length * 100}%"></i></div>
+  <div class="card">
+    <span class="tag">${CATS[q.c]}</span><span class="tag">${q.s}</span>
+    ${r ? `<span class="tag">${r.c}/${r.n}正解</span>` : ""}
+    <div class="qtext" id="qt">${esc(q.q)}</div>
+  </div>
+  <div id="res"></div>
+  <div class="ans" id="ans"><button class="o" data-a="1">○</button><button class="x" data-a="0">×</button></div>`;
+  document.getElementById("bQuit").onclick = () => S.results.length ? renderResult() : renderHome();
+  document.getElementById("ans").onclick = e => { const a = e.target.closest("button")?.dataset.a; if (a != null) answer(a === "1"); };
+  window.scrollTo(0, 0);
+}
+
+function answer(choice) {
+  if (S.answered) return;
+  S.answered = true;
+  const q = S.list[S.i], ok = choice === q.a;
+  const r = store.rec[q.id] = store.rec[q.id] || {n:0, c:0, last:null, u:0, streak:0};
+  r.n++; if (ok) { r.c++; r.streak++; } else r.streak = 0;
+  r.last = ok ? 1 : 0;
+  if (!ok) r.u = 0; else if (r.u && r.streak >= 2) r.u = 0; // 迷い印は2連続正解で解除
+  save();
+  const res = {id:q.id, ok, u:false}; S.results.push(res);
+
+  const qt = document.getElementById("qt");
+  qt.innerHTML = q.h && q.q.includes(q.h) ? esc(q.q).replace(esc(q.h), `<mark>${esc(q.h)}</mark>`) : esc(q.q);
+  document.getElementById("ans").remove();
+  document.getElementById("res").innerHTML = `
+  <div class="card">
+    <div class="verdict ${ok ? "ok" : "ng"}">${ok ? "正解！" : "不正解…"}　正答は ${q.a ? "○" : "×"}</div>
+    <div class="trap" style="margin-top:6px">${q.a ? `⚠ 逆ひっかけ（誤りに見えて正しい肢）：${TYPES[q.t]}` : `⚠ ひっかけパターン：${TYPES[q.t]}`}</div>
+    <div class="exp">${esc(q.e)}</div>
+    ${ok ? `<label class="toggle"><input type="checkbox" id="unsure"> 正解したけど迷った（要復習に入れる）</label>` : ""}
+  </div>
+  <div class="ans"><button class="pri" id="bNext" style="grid-column:1/3;font-size:18px">${S.i + 1 < S.list.length ? "次へ ▶" : "結果を見る"}</button></div>`;
+  const u = document.getElementById("unsure");
+  if (u) u.onchange = () => { r.u = u.checked ? 1 : 0; if (u.checked) r.streak = 0; res.u = u.checked; save(); };
+  document.getElementById("bNext").onclick = next;
+}
+
+function next() {
+  S.i++;
+  S.i < S.list.length ? renderQ() : renderResult();
+}
+
+function renderResult() {
+  const rs = S.results, c = rs.filter(x => x.ok && !x.u).length, okAll = rs.filter(x => x.ok).length;
+  app.classList.remove("quiz");
+  const miss = rs.filter(x => !x.ok || x.u).map(x => Q.find(q => q.id === x.id));
+  app.innerHTML = `
+  <h1>結果</h1>
+  <div class="card">
+    <div class="count"><b style="color:var(--pri)">${okAll}</b> / ${rs.length} 問正解（${pct(okAll, rs.length)}%）</div>
+    <div class="sub">うち迷った問題 ${okAll - c} 問</div>
+  </div>
+  ${miss.length ? `<button class="pri block" id="bRetry" style="text-align:center">間違い・迷った ${miss.length} 問をもう一度</button>` : ""}
+  <button class="block" id="bHome" style="text-align:center">ホームへ</button>
+  <div class="card list">${rs.map(x => { const q = Q.find(q => q.id === x.id);
+    return `<div class="it"><span class="mk ${x.ok ? "ok" : "ng"}">${x.ok ? (x.u ? "△" : "○") : "×"}</span>${esc(q.q)}
+      <div class="sub" style="margin-top:4px">正答 ${q.a ? "○" : "×"}｜${esc(q.e)}</div></div>`; }).join("")}</div>`;
+  document.getElementById("bHome").onclick = renderHome;
+  const rb = document.getElementById("bRetry");
+  if (rb) rb.onclick = () => start(shuffle(miss), "やり直し");
+  window.scrollTo(0, 0);
+}
+
+// PC用キーボード操作：O/1=○, X/0=×, Enter/Space=次へ
+document.addEventListener("keydown", e => {
+  if (!S) return;
+  if (!S.answered) { if ("o1".includes(e.key.toLowerCase())) answer(true); else if ("x0".includes(e.key.toLowerCase())) answer(false); }
+  else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); next(); }
+});
+
+renderHome();
+})();
+</script>
+</body>
+</html>
